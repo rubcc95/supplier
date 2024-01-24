@@ -21,7 +21,7 @@ abstract class Served extends InheritedElement with NotifiableElementMixin {
 
   @override
   void updated(covariant Supplier oldWidget) {
-    if (updateShouldNotify()) {
+    if (isDirty) {
       notifyClients(oldWidget);
     }
   }
@@ -49,7 +49,8 @@ abstract class Served extends InheritedElement with NotifiableElementMixin {
     return false;
   }
 
-  bool updateShouldNotify() {
+  @protected
+  bool get isDirty {
     if (_needsUpdate) {
       _needsUpdate = false;
       return true;

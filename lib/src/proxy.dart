@@ -15,8 +15,8 @@ mixin ServedProxyMixin<S extends Served> on Served {
   }
 
   @override
-  bool updateShouldNotify() {
-    if (super.updateShouldNotify() || _needsUpdate) {
+  bool get isDirty {
+    if (super.isDirty || _needsUpdate) {
       _needsUpdate = false;
       return true;
     }

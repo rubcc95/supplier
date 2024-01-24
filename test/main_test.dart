@@ -17,13 +17,11 @@ void main() async {
     await t.pumpWidget(MaterialApp(
       home: Supplier.future<String>(
         future: Future.value('Yolo'),
-        initialValue: 'None',                
-        child: Client<ServedFuture<String>>(
-            (served) => Text(served!.value)),
+        initialValue: 'None',
+        child: Client<ServedFuture<String>>((served) => Text(served!.value)),
       ),
     ));
     await t.pump(const Duration(seconds: 10));
     expect(find.text('None'), findsOneWidget);
-    
   });
 }
