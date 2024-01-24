@@ -1,0 +1,19 @@
+name: supplier
+description: Another state management wrapper for InheritedElements. Allow async operations inside widgets rebuilding only the desired subtrees with few lines.
+version: 0.0.1-dev.2
+repository: https://github.com/rubcc95/supplier
+issue_tracker: https://github.com/rubcc95/supplier/issues
+topics:
+  - state-management  
+  - http
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=1.16.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
