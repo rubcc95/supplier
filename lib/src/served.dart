@@ -15,15 +15,19 @@ class _ServedNotification<T extends Served> extends Notification {
 abstract class Served extends InheritedElement with NotifiableElementMixin {
   Served(super.widget);
 
+  @override
+  Supplier get widget => super.widget as Supplier;
+
   bool _needsUpdate = false;
 
   Type get handledType => runtimeType;
 
   @override
-  void updated(covariant Supplier oldWidget) {
+  Widget build() {
     if (isDirty) {
-      notifyClients(oldWidget);
+      notifyClients(widget);
     }
+    return super.build();
   }
 
   @override
