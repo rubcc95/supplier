@@ -1,66 +1,65 @@
 import 'package:flutter/widgets.dart';
 
-import 'served.dart';
 import 'subscriptor.dart';
 
-enum ServedStreamState { waiting, active, done, error }
+enum ServiceStreamState { waiting, active, done, error }
 
-class ServedStream<T> extends ServedSubscriptor {
-  T? _value;
+class ServiceStream<T> extends ServiceSubscriptor {  
+  ServiceStream(super.widget, Stream<T> stream)
+      : _stream = stream;
+
   final Stream<T> _stream;
-  ServedStreamState _state = ServedStreamState.waiting;
-  Object? _error;
-  StackTrace _stackTrace = StackTrace.empty;
-
-  ServedStream(super.widget, {required Stream<T> stream, T? initialValue})
-      : _stream = stream,
-        _value = initialValue;
+  ServiceStreamState _state = ServiceStreamState.waiting;
+  late T _data;
+  late Object _error;
+  late StackTrace _stackTrace;
 
   @override
   void mount(Element? parent, Object? newSlot) {
     super.mount(parent, newSlot);
     addStream<T>(_stream, onData: (data) {
-      _state = ServedStreamState.active;
-      _value = data;
+      _state = ServiceStreamState.active;
+      _data = data;
       notify();
     }, onDone: () {
-      _state = ServedStreamState.done;
-      _value = null;
+      _state = ServiceStreamState.done;
       notify();
     }, onError: (error, stackTrace) {
-      _state = ServedStreamState.error;
-      _value = null;
+      _state = ServiceStreamState.error;
       _error = error;
       _stackTrace = stackTrace;
       notify();
     });
   }
 
-  T get value {
+  T? get data => _state == ServiceStreamState.active ? _data : null;
+
+  T get requireData {
     assert(
-        _value != null,
-        'Stream has not emitted any value. '
-        'Check for state == ${ServedStreamState.active} or set a not null value '
+        _state == ServiceStreamState.active,
+        'Future has not been completed. '
+        'Check for state == ${ServiceStreamState.active} or set a not null value '
         'for initialValue on constructor before using this getter.');
-    return _value!;
+    return _data;
   }
 
   Object get error {
     assert(
-        _value != null,
+        _data != null,
         'Stream has not emitted any error. '
-        'Check for state == ${ServedStreamState.error} '
+        'Check for state == ${ServiceStreamState.error} '
         'before using this getter.');
-    return _error!;
+    return _error;
   }
 
-  StackTrace get stackTrace => _stackTrace;
+  StackTrace get stackTrace {
+    assert(
+        _data != null,
+        'Stream has not emitted any StackTrace. '
+        'Check for state == ${ServiceStreamState.error} '
+        'before using this getter.');
+    return _stackTrace;
+  }
 
-  ServedStreamState get state => _state;
-}
-
-extension ServedStreamContext on BuildContext {
-  ServedStream<T> readStream<T>() => read();
-
-  void listenStream<T>() => listen<ServedStream<T>>();
+  ServiceStreamState get state => _state;
 }

@@ -1,14 +1,7 @@
-import 'package:flutter/widgets.dart';
-import 'served.dart';
+import 'service.dart';
 
-class ServedValue<T> extends Served {
-  final T value;
+class ServiceData<T> extends Service {
+  ServiceData(super.widget, {required this.data});
 
-  ServedValue(super.widget, {required this.value});
-}
-
-extension ServedValueContext on BuildContext {
-  T readValue<T>() => read<ServedValue<T>>().value;
-
-  void listenValue<T>() => listen<ServedValue<T>>();
+  final T data;
 }

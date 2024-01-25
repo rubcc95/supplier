@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'served.dart';
+import 'service.dart';
 
 typedef SubscriptionCallback = VoidCallback Function(
     VoidCallback removeSubscription);
@@ -8,7 +8,7 @@ typedef DataCallback<T> = void Function(T data);
 typedef DoneCallback = void Function();
 typedef ErrorCallback = void Function(Object error, StackTrace stackTrace);
 
-mixin ServedSubscriptorMixin on Served {
+mixin ServiceSubscriptorMixin on Service {
   final List<VoidCallback> _cancelCallbacks = [];
 
   VoidCallback addSubscription(SubscriptionCallback builder) {
@@ -91,4 +91,4 @@ mixin ServedSubscriptorMixin on Served {
   }
 }
 
-class ServedSubscriptor = Served with ServedSubscriptorMixin;
+class ServiceSubscriptor = Service with ServiceSubscriptorMixin;

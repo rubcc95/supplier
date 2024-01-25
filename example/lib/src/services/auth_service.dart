@@ -5,7 +5,7 @@ import '../fake_server/fake_server.dart';
 
 final server = FakeServer();
 
-class AuthService extends ServedSubscriptor {
+class AuthService extends ServiceSubscriptor {
   AuthService(super.widget);
 
   FakeUser? _user;

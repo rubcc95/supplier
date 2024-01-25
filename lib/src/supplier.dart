@@ -1,19 +1,22 @@
 import 'package:flutter/widgets.dart';
 
+import 'future.dart';
 import 'multi.dart';
 import 'notifier.dart';
-import 'future.dart';
-import 'value.dart';
-import 'served.dart';
+import 'service.dart';
 import 'stream.dart';
+import 'value.dart';
 
-typedef CreateServed<T extends Served> = T Function(InheritedWidget widget);
+typedef ServiceBuilder<T extends Service> = T Function(InheritedWidget widget);
 
-final class Supplier<T extends Served> extends Widget
+final class Supplier<T extends Service> extends Widget
+    // reason: extends same operator ==(Object) 
+    // and get hashCode implementations from Widget
+    // ignore: avoid_implementing_value_types
     implements InheritedWidget {
   const Supplier({
     super.key,
-    required this.init,
+    required this.builder,
     Widget? child,
   }) : _maybeChild = child;
 
@@ -23,32 +26,26 @@ final class Supplier<T extends Served> extends Widget
       MultiSupplier(services: services, child: child);
 
   @factory
-  static Supplier<ServedStream<T>> stream<T>(
-          {required Stream<T> stream,
-          T? initialValue,
-          required Widget child}) =>
+  static Supplier<ServiceStream<T>> stream<T>(
+          {required Stream<T> stream, required Widget child}) =>
       Supplier(
-        init: (widget) =>
-            ServedStream(widget, stream: stream, initialValue: initialValue),
+        builder: (widget) => ServiceStream(widget, stream),
         child: child,
       );
 
   @factory
-  static Supplier<ServedFuture<T>> future<T>(
-          {required Future<T> future,
-          T? initialValue,
-          required Widget child}) =>
+  static Supplier<ServiceFuture<T>> future<T>(
+          {required Future<T> future, required Widget child}) =>
       Supplier(
-        init: (widget) =>
-            ServedFuture(widget, future: future, initialValue: initialValue),
+        builder: (widget) => ServiceFuture(widget, future),
         child: child,
       );
 
   @factory
-  static Supplier<ServedNotifier<T>> changeNotifier<T extends ChangeNotifier>(
+  static Supplier<ServiceNotifier<T>> changeNotifier<T extends ChangeNotifier>(
           {required T notifier, required Widget child}) =>
       Supplier(
-        init: (widget) => ServedNotifier(
+        builder: (widget) => ServiceNotifier(
           widget,
           notifier: notifier,
         ),
@@ -56,11 +53,11 @@ final class Supplier<T extends Served> extends Widget
       );
 
   @factory
-  static Supplier<ServedValue<T>> value<T>(T value) =>
-      Supplier(init: (widget) => ServedValue(widget, value: value));
+  static Supplier<ServiceData<T>> value<T>(T value) =>
+      Supplier(builder: (widget) => ServiceData(widget, data: value));
 
   final Widget? _maybeChild;
-  final CreateServed<T> init;
+  final ServiceBuilder<T> builder;
 
   @override
   Widget get child {
@@ -70,7 +67,7 @@ final class Supplier<T extends Served> extends Widget
   }
 
   @override
-  Served createElement() => init(this);
+  Service createElement() => builder(this);
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) =>

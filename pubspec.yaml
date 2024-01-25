@@ -6,6 +6,7 @@ issue_tracker: https://github.com/rubcc95/supplier/issues
 topics:
   - state-management  
   - http
+  
 environment:
   sdk: ">=3.0.0 <4.0.0"
   flutter: ">=1.16.0"

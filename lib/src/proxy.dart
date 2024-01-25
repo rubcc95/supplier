@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 
-import 'served.dart';
+import 'service.dart';
 import 'supplier.dart';
 
-mixin ServedProxyMixin<S extends Served> on Served {
+mixin ServiceProxyMixin<S extends Service> on Service {
   bool _needsUpdate = false;
 
   bool proxyUpdateShouldNotify(S? value) => true;
@@ -25,9 +25,9 @@ mixin ServedProxyMixin<S extends Served> on Served {
 
   @override
   void mount(Element? parent, Object? newSlot) {
-    super.mount(parent, newSlot);
+    super.mount(parent, newSlot);    
     listen<S>(proxyUpdateShouldNotify);
   }
 }
 
-class ServedProxy<S extends Served> = Served with ServedProxyMixin<S>;
+class ServiceProxy<S extends Service> = Service with ServiceProxyMixin<S>;

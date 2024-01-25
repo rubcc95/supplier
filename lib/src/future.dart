@@ -1,61 +1,61 @@
 import 'package:flutter/widgets.dart';
-import 'served.dart';
 import 'subscriptor.dart';
 
-enum ServedFutureState { waiting, done, error }
+enum ServiceFutureState { waiting, done, error }
+//make my desired intellicode!
+class ServiceFuture<T> extends ServiceSubscriptor {  
+  ServiceFuture(super.widget, Future<T> future)
+      : _future = future;
 
-class ServedFuture<T> extends ServedSubscriptor {
-  T? _value;
   final Future<T> _future;
-  ServedFutureState _state = ServedFutureState.waiting;
-  Object? _error;
-  StackTrace _stackTrace = StackTrace.empty;
-
-  ServedFuture(super.widget, {required Future<T> future, T? initialValue})
-      : _future = future,
-        _value = initialValue;
+  ServiceFutureState _state = ServiceFutureState.waiting;  
+  late T _data;
+  late Object _error;
+  late StackTrace _stackTrace;
 
   @override
   void mount(Element? parent, Object? newSlot) {
     super.mount(parent, newSlot);
     addFuture<T>(_future, onData: (data) {
-      _state = ServedFutureState.done;
-      _value = data;
+      _state = ServiceFutureState.done;
+      _data = data;
       notify();
     }, onError: (error, stackTrace) {
-      _state = ServedFutureState.error;
-      _value = null;
+      _state = ServiceFutureState.error;
       _error = error;
       _stackTrace = stackTrace;
       notify();
     });
   }
 
-  T get value {
+  T? get data => _state == ServiceFutureState.done ? _data : null;
+
+  T get requireData {
     assert(
-        _value != null,
+        _state == ServiceFutureState.done,
         'Future has not been completed. '
-        'Check for state == ${ServedFutureState.done} or set a not null value '
+        'Check for state == ${ServiceFutureState.done} or set a not null value '
         'for initialValue on constructor before using this getter.');
-    return _value!;
+    return _data;
   }
 
   Object get error {
     assert(
-        _value != null,
+        _state == ServiceFutureState.error,
         'Future has not emitted any error. '
-        'Check for state == ${ServedFutureState.error} '
+        'Check for state == ${ServiceFutureState.error} '
         'before using this getter.');
-    return _error!;
+    return _error;
   }
 
-  StackTrace get stackTrace => _stackTrace;
+  StackTrace get stackTrace {
+    assert(
+        _state == ServiceFutureState.error,
+        'Future has not emitted any StackTrace. '
+        'Check for state == ${ServiceFutureState.error} '
+        'before using this getter.');
+    return _stackTrace;
+  }
 
-  ServedFutureState get state => _state;
-}
-
-extension ServedFutureContext on BuildContext {
-  ServedFuture<T> readFuture<T>() => read();
-
-  void listenFuture<T>() => listen<ServedFuture<T>>();
+  ServiceFutureState get state => _state;
 }
